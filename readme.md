@@ -42,7 +42,7 @@ Alternatively, you can skip this step and start with the results already stored 
 Run the code chunks in preprint.Rmd for figures and tables as reported in the `preprint.Rmd` and `appendix.Rmd` for additional content reported in the supplementary online material.
 Note that the final accepted manuscript underwent some changes (substantial textual changes, omitting the EFA results, and more) during the revision, such that `preprint.Rmd` is not identical with the final accepted manuscript.
 
-### 6. Contact Information
+## Contact Information
 
 If you encounter any issues or have questions, feel free to reach out to Clemens Lechner at [clemens.lechner@gesis.org](mailto:clemens.lechner@gesis.org).
 
