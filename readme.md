@@ -9,6 +9,10 @@ This repository contains the code to reproduce the analyses reported in the foll
 **Year:** 2024  
 **Journal:** Journal of Personality Assessment  
 
+The analyses results reported in the manuscript can be found in the folder `01_results` in the files `all_results.Rdata` and `mi_results.Rdata`, respectively.
+These files hold results in various R data formats, such as lists, data frames / tibbles, or vectors. The tables and figures are generated from these data.
+The steps outlined below will reproduce bot the `.Rdata` files and these tables and figures.
+
 ## Steps to Reproduce Analyses
 
 To reproduce the analyses, follow these steps:
@@ -21,9 +25,9 @@ Visit the [GESIS Panel](https://www.gesis.org/en/gesis-panel/gesis-panel-home) w
 
 Download the SPSS data distribution from the GESIS Panel and copy the files into the `01_data/spss` folder.
 
-### 3. Generate R Data File
+### 3. Generate R Data File from SPSS disteribution
 
-Run the script `00_data_preparation.R` to generate the R data file.
+Run the script `00_data_preparation.R` to generate the R data files from the GESIS Panel's SPSS data.
 
 ### 4. Reproduce Analyses
 You can now reproduce all analyses by running the following scripts:
@@ -31,9 +35,12 @@ You can now reproduce all analyses by running the following scripts:
 `01_analysis.R` for main analyses.
 `02_analysis_mi.R` for measurement invariance analyses.
 
+This will re-generate the results already stored in  `01_results/all_results.Rdata` and `01_results/mi_results.Rdata`.
+Alternatively, you can skip this step and start with the results already stored there. In this case, proceed to step 5.
 
 ###  5. Generate Figures and Tables
 Run the code chunks in preprint.Rmd for figures and tables as reported in the `preprint.Rmd` and `appendix.Rmd` for additional content reported in the supplementary online material.
+Note that the final accepted manuscript underwent some changes (substantial textual changes, omitting the EFA results, and more) during the revision, such that `preprint.Rmd` is not identical with the final accepted manuscript.
 
 ### 6. Contact Information
 
