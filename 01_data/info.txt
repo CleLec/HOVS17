@@ -1,0 +1,3 @@
+Copy the GESIS Panel data (spss folder) here. 
+There should be a subfolder names "spss" that contains the SPSS files.
+You can change the directory in 00_helper_functions.R
