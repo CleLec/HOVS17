@@ -25,7 +25,7 @@ Visit the [GESIS Panel](https://www.gesis.org/en/gesis-panel/gesis-panel-home) w
 
 Download the SPSS data distribution from the GESIS Panel and copy the files into the `01_data/spss` folder.
 
-### 3. Generate R Data File from SPSS disteribution
+### 3. Generate R Data File from SPSS distribution
 
 Run the script `00_data_preparation.R` to generate the R data files from the GESIS Panel's SPSS data.
 
