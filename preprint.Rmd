@@ -1,0 +1,610 @@
+---
+title             : "Measuring the 4 Higher-Order Values in Schwartz's Theory: A Validation of a 17-Item Inventory"
+shorttitle        : "Measuring the 4 Higher-Order Schwartz Values"
+
+author: 
+  - name          : "Clemens M. Lechner"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "B6, 4–5, 68163 Mannheim, Germany"
+    email         : "clemens.lechner@gesis.org"
+    role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
+      - "Conceptualization"
+      - "Formal Analysis"
+      - "Writing - Original Draft Preparation"
+      - "Writing - Review & Editing"
+  - name          : "Constanze Beierlein"
+    affiliation   : "2"
+    role:
+      - "Conceptualization"
+      - "Writing - Review & Editing"
+  - name          : "Eldad Davidov"
+    affiliation   : "3, 4"
+    role:
+      - "Conceptualization"
+      - "Writing - Review & Editing"
+  - name          : "Shalom H. Schwartz"
+    affiliation   : "5"
+    role:
+      - "Conceptualization"
+      - "Writing - Review & Editing"
+affiliation:
+  - id            : "1"
+    institution   : "GESIS – Leibniz Institute for the Social Sciences, Mannheim, Germany"
+  - id            : "2"
+    institution   : "Hamm-Lippstadt University of Applied Sciences, Germany"
+  - id            : "3"
+    institution   : "University of Cologne, Germany"
+  - id            : "4"
+    institution   : "URPP 'Social Networks', University of Zurich, Switzerland"
+  - id            : "5"
+    institution   : "Hebrew University of Jerusalem, Israel"
+    
+
+authornote: |
+  
+
+abstract: |
+ Schwartz's theory of basic human values is the dominant framework for assessing human values. One of its strengths is that it allows for different levels of analysis. The 10 basic human values can be reliably assigned to 4 higher-order value dimensions: Openness-to-Change, Conservation, Self-Transcendence, and Self-Enhancement. In this paper, we examined the psychometric properties of the Higher-Order-Value Scale-17 (HOVS17), an inventory that aims to economically assess these higher-order values. Analyzing data from the GESIS Panel, an ongoing probability-based panel that has fields HOVS17 since 2013, we found that HOVS17 and its subscales showed good structural/factorial validities and reliability. The subscales correlated in theoretically plausible ways with a wide range of correlates and criteria such as personality traits, and well-being. This demonstrates that HOVS17 provides a sound basis for studying the development, precursors, and consequences of the higher-order values in GESIS Panel and in future surveys that adopt HOVS17. 
+  
+  <!-- https://tinyurl.com/ybremelq -->
+  
+keywords          : "values, measurement, GESIS Panel, HOVS17, Schwartz"
+wordcount         : "6,149"
+
+bibliography      : "references.bib"
+
+floatsintext      : no
+tablesintext      : no
+linenumbers       : no
+draft             : no
+mask              : no
+
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+
+classoption       : "man"
+header-includes:
+  - \usepackage{caption}
+  - \usepackage{makecell}
+  - \usepackage{multirow}
+  - \captionsetup{font=small}
+  - |
+    \makeatletter
+    \renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}%
+      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+      {-1em}%
+      {\normalfont\normalsize\bfseries\typesectitle}}
+    
+    \renewcommand{\subparagraph}[1]{\@startsection{subparagraph}{5}{1em}%
+      {0\baselineskip \@plus 0.2ex \@minus 0.2ex}%
+      {-\z@\relax}%
+      {\normalfont\normalsize\bfseries\itshape\hspace{\parindent}{#1}\textit{\addperi}}{\relax}}
+    \makeatother
+
+csl               : "`r system.file('rmd', 'apa7.csl', package = 'papaja')`"
+documentclass     : "apa7"
+output: 
+  papaja::apa6_word:
+    latex_engine: xelatex
+appendix          : 
+   - "appendix.Rmd"
+---
+
+```{r setup, include = FALSE}
+# Word or PDF?
+ word <- TRUE
+
+# Load requisite packages
+library("ggplot2")
+library("tidyverse")
+library("glue")
+library("ggridges")
+library("papaja")
+library("kableExtra")
+r_refs("references.bib")
+
+# Load helper functions, raw data and results
+source("helper_functions.R")
+
+# Load data
+load(file.path(dirs$data, "gpdata.Rdata"))
+
+# Load results
+load(file.path(dirs$results, "all_results.Rdata"))
+load(file.path(dirs$results, "mi_results.Rdata"))
+
+# Renamer
+group_renamer <- c( "age_group" = "Age Group" ,
+                     "edu_group" = "Education",
+                   "gender" = "Gender") 
+
+dimension_renamer <- c("conservation_t1" = "Conservation",
+                     "openness_t1" = "Openness",
+                     "enhancement_t1" = "Self-Enhancement",
+                     "transcendence_t1" = "Self-Transcendence"
+                     )
+  
+
+```
+
+```{r analysis-preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE )
+
+```
+
+# Introduction
+
+The study of values is of long-standing interest in psychology, sociology, and adjacent disciplines. In the past three decades, Schwartz's (1992) theory of human values has become the leading framework for value research in the behavioral and social sciences. His original framework distinguishes 10 basic human values whose quasi-circumplex structure emerges with great regularity across cultures and languages [@schwartz2012]. Based on their position in two-dimensional space, these basic human values can be assigned to 4 more abstract, higher-order values that reflect fundamental tensions between Openness-to-Change vs. Conservation and between Self-Enhancement vs. Self-Transcendence.
+
+Drawing upon Schwartz's theory, value research has become a vibrant field spanning multiple disciplines and addressing a broad diversity of topics such as the predictive power of values for attitudes and behaviors [e.g., @lee2022], links between values and well-being [e.g., @grosz2021; @sortheix2017], life-span development of values [e.g., @gouveia2015; @milfont2016], and cultural or contextual influences on values [e.g., @sagiv2022; @sortheix2019].
+
+Concomitantly, several national and international survey programs such as the European Social Survey (ESS) have included measures of the Schwartz values. These surveys provide a wealth of secondary data for value research and several well-validated value inventories for future survey programs from which to choose. Most of these inventories aim to assess all 10 basic human values. However, assessing all the basic human values may not always be feasible for surveys because of constraints on survey length. Moreover, in some cases, parsimoniously assessing the 4 higher-order values with fewer items is sufficient and even desirable.
+
+To meet the needs of surveys and individual researchers who seek to measure only the 4 higher-order values, we here evaluate a 17-item inventory developed to assess these higher-order values economically. The last three authors developed a German version of this inventory for the GESIS Panel [@bosnjak2018] around 2013. It has since been fielded in 3 cohorts and 9 waves of the GESIS Panel. However, the psychometric properties of the inventory, henceforth called the Higher-Order Value Scale-17 (HOVS17), have not yet been thoroughly investigated and documented. To fill this gap, we provide an in-depth analysis of the psychometric properties of HOVS17: descriptive statistics, structural/factorial validity, reliability (including test--retest stability), measurement invariance across socio-demographic groups, and nomological networks / criterion validity. Our aim was to provide benchmarks for secondary users of the GESIS Panel but also for researcher who aim to include the measure in their own future surveys.
+
+## A Brief Overview of Schwartz's Framework
+
+@schwartz1992 [see also @schwartz1994] defined values as beliefs pertaining to desirable end states or modes of conduct that are ordered in importance transcend specific situations and serve as guiding principles in life that influence the selection or evaluation of behavior, people, and events. According to this theory, basic human values form a motivational continuum, represented in a quasi-circumplex or "circle" model [@schwartz2004]. Values with compatible underlying motivations are located closer to each other in the circle, whereas those with incompatible or conflicting underlying motivations are located on opposite sides. By segmenting the two-dimensional MDS space, @schwartz1992 distinguished 10 motivationally distinct basic human values. These 10 values can be assigned to the 4 broader, higher-order values: Openness-to-Change (i.e., the importance of following one's own intellectual and emotional interests, especially in novel situations), Conservation (i.e., the importance of self-restriction, preserving the past, order, and resistance to change), Self-Transcendence (i.e., the importance of transcending selfish concerns and of promoting the welfare of other people), and Self-Enhancement (i.e., the importance of enhancing one's own interests, even at the expense of others).
+
+Figure \@ref(fig:framework) depicts, in idealized form, the structure of human values according to Schwartz's theory. As the figure shows, the higher-order value Conservation is comprised of the basic values Tradition, Conformity, and Security, whereas the opposing higher-order value Openness-to-Change is comprised of Self-Direction and Stimulation. Self-Enhancement is comprised of Achievement and Power, whereas its opposing higher-order value Self-Transcendence is comprised of Benevolence and Universalism. The basic value Hedonism is not clearly assigned to one of the 4 higher-order values because its motivational content combines elements of both Openness and Self-Enhancement, as reflected in its MDS position in most cultures. As in any quasi-circumplex, one could combine adjacent individual values into different higher-order combinations. However, these 4 higher-order values are widely used and readily interpretable. They were therefore chosen as the focus of HOVS17.
+
+(ref:framework-caption) Idealized quasi-circumplex structure of Schwartz's value theory.
+
+```{r framework, fig.cap = "(ref:framework-caption)"}
+
+knitr::include_graphics(
+  file.path(dirs$material, "framework.png")
+)
+
+```
+
+## The Need for a Short Higher-Order Value Scale
+
+The most widely used inventories assessing basic human values in Schwartz's theory are the 57-item Schwartz Value Survey [SVS, @schwartz1992], the 40-item Portrait Value Questionnaire [PVQ, @schwartz2003], and the 57-item Revised PVQ [PVQ-RR, @schwartz2022]. However, these inventories may be too lengthy for some surveys, and assessing all the 10 values may not be feasible with a reasonable number of items. For example, the PVQ-21 in the ESS was not able to distinguish between all ten values in the theory [@davidov2008]. More generally, for some research questions involving values, the 4 more abstract higher-order values may provide a more appropriate level of abstraction. For example, if the goal is to study the lifespan development, or group differences in, broad value orientations, the higher-order values may be sufficient. 
+
+The motivation for developing HOVS17 was to provide a short and economic, yet reliable and valid inventory that enables measuring the 4 higher-order values with as few items as possible. There exist various short value inventories, such as the 21-item version of the PVQ included in the ESS [PVQ-21, @davidov2008]. However, the ESS inventory is slightly longer than HOVS17 and, more importantly, includes two sentences per item; such double-barreled items increase response burden and may detract slightly from validity. HOVS17 avoids such double-barreled items and, akin to PVQ-RR, used single sentences per value item.
+
+Another aim in developing HOVS17 was to allow for a wide variety of statistical approaches that secondary data users might adopt. In particular, the goal was to enable analyses based not only on observed scores but also on a latent variable for each higher-order value. Observed scores are the most widely used way of including values in statistical analyses. Typically, summative scores are computed for each (higher-order) value, often after centering all items at the within-person mean to obtain value priorities and eliminate individual differences in scale use [e.g., @schwartz1997]. This treats values as formative constructs. 
+
+However, some researchers [e.g., @davidov2008; @grosz2021; @schwartz2004] prefer latent-variable models such as confirmatory factor analysis (CFA). Using latent variables corresponds to conceptualizing the values as reflective measures in which a common latent variable is thought to influence all items that measure a given value. In set theoretical terms, formative indices are the union (total variance) of the variances of the constituent items, whereas reflective latent variables correspond to their intersection (common variance). Because the 4 higher-order values are abstract, heterogeneous constructs by definition, subscales that measure them would ordinarily not conform to the unidimensionality and internal consistency standards of reflective measurement. Therefore, one goal in constructing HOVS17 was to enable researchers to apply both conceptualization of values (i.e., formative indices and reflective constructs) and attendant methodologies.
+
+## Construction of the Inventory
+
+To achieve these ends, we selected items from the first revision of the Portraits Values Questionnaire [PVQ-R, @schwartz2012] that, according to both substantive considerations (i.e., representing the constructs in breadth) and statistical findings (i.e. internal consistency, measurement invariance across countries), might provide good indicators of the 4 higher-order values. Item selection was based on data from convenience samples collected in Germany and six other countries [@schwartz2012]. We identified and selected the items that were closest to each of the 4 poles according to their position in two-dimensional MDS spaces representing the 4 higher-order values. Different analytical strategies (e.g., multiple-group CFA, weak confirmatory MDS) yielded a set of items that consistently represented the 4 value dimensions best across the different cross-cultural samples. The items selected for measuring the 4 higher-order values represent 9 of the 10 basic human values; we omitted Hedonism because the Schwartz theory does not assign hedonism unequivocally to one of the 4 higher-order values. The 17 selected items measures each of the 4 higher-order values with at least 3 items.
+
+To fit the needs of mixed-mode surveys, each item consisted of a short (single-sentence) verbal portrait of a person. The portraits described a person's desires, wishes, and aspirations that were linked to one of the basic values. Respondents were asked to rate how similar the person described in each portrait was to themselves on a fully labeled six-point scale ranging from „not like me at all" to „very much like me". Unlike the original PVQ, items were not gender-matched but contained both male and female pronouns ("he/she is"). Although this makes the items slightly less readable, it permits the items to be fielded in identical ways in both online surveys and paper-pencil surveys, a requirement for the mixed-model GESIS Panel. ^[Although not yet been implemented in the GESIS Panel, items could be adapted to include a third gender pronoun or only one, gender-neutral pronoun (e.g., "they/them").]
+
+Table \@ref(tab:scale-info) shows the wording of the 17 items in English, along with the higher-order value they were selected to measure and the basic human value they represent. 
+
+(ref:scale-info-caption) Wording of the 17 items and assignment to the (higher-order) values.
+
+```{r scale-info}
+
+
+scale_info |>
+ select(-`Item Label (GESIS Panel)`, -`Wording (German)`, -`Higher-order value`, -`Basic human value (refined theory)`) |>
+  apa_table(
+    stub_indents  = list("Conservation" = c(1:3),
+                       "Openness-to-Change" = c(4:8),
+                       "Self-Enhancement" = c(9:12),
+                       "Self-Transcendence" = c(13:17)),
+    font_size = "scriptsize", 
+    caption = "(ref:scale-info-caption)",
+    align = ifelse(isTRUE(word), 
+                   "lcc",
+                   c("m{2.75cm}", "m{8cm}",  "m{2.5cm}")),
+    note = "The item labels refer to the item's order in the inventory (number) and the higher-order value it measures (letter). E.g., 12CO is the 12th item and measures Conservation."
+  )
+ 
+```
+
+We piloted these items in a heterogeneous German online panel sample ($N = 520$). Despite the global nature of the higher-order values and the small number of items per subscale, internal consistencies were satisfactory ($.62 \leq \omega \leq .70$), as was the factorial validity of each subscale. The scale also yielded the expected relations with established value scales in terms of convergent and discriminant validity. However, results from this pilot study [@beierlein2014] have not been published. Thus, the psychometric properties of HOVS17 have yet to be documented.
+
+# The Present Study
+
+The goal of the present study was to evaluate the psychometric properties of HOVS17. We analyzed secondary data from the GESIS Panel, an ongoing large-scale panel study in Germany for which the inventory was originally developed. These analyses reveal how appropriate HOVS17 is for use both by secondary data users of the GESIS Panel and by researchers who wish to include a measure of higher-order values in their primary data collection.
+
+For each subscale, we tested its unidimensionality, reliability (including 1-year test--retest reliability), and factorial validity (fit of unidimensional CFA models). We also evaluated the structural validity of the inventory as a whole by means of MDS and exploratory factor analysis (EFA). Moreover, we computed correlations of the 4 scales with a number of correlates and criteria that are prominent in value research and neighboring fields. Specifically, we report associations with (1) sociodemographic characteristics (age, gender, educational attainment, and income) to test the sensitivity to group differences of the 4 value scales [e.g., @milfont2016; @gouveia2015]; (2) Big Five personality traits to test the discriminant validity of the value scales [e.g., @parks-leduc2015]; (3) the importance attached to different life areas to test their convergent validity; and (4) political orientation [e.g., @piurko2011; @schwartz2010] as well as subjective well-being [e.g., @grosz2021; @sortheix2017] to test their convergent and criterion validity. For several of these associations, we preregistered hypotheses based on prior theorizing and empirical research; the preregistration can be accessed in the project's OSF archive at <https://osf.io/fdg3z/>.
+
+# Methods
+
+All data are publicly available after registration from <https://www.gesis.org/gesis-panel/data>. The complete R code used for this project is available from the first author's GitLab repository at <https://git.gesis.org/lechnecs/GESISPanelValues>. Moreover, full details on all measures used can be found in the GESIS Panel documentation at <https://www.gesis.org/en/gesis-panel/documentation>.
+
+## Data
+
+The GESIS panel is an ongoing, probability-based, longitudinal mixed-mode survey of German-speaking people aged 18 to 70 years who reside in private households that are registered in Germany [@bosnjak2018]. <!-- Add more current reference-->Sampling was done in a two-stage procedure in which municipalities were randomly sampled in the first stage and then individuals from these municipalities. All members of the probability sample ($N = 21,870$) were first contacted through a pre-notification letter and then personally by an interviewer (minimum of 4 contact attempts). Of the probability sample, 7,599 participated in a computer-aided face-to-face recruitment interview. Those of them (more than half) who expressed their willingness to continue their participation were taken into the panel and could choose to participate via an online questionnaire or via a paper-and-pencil questionnaire sent via postal mail. Thirty-eight percent of the panelists chose to participate in the survey via mail [for more details on sampling, recruitment rate, and sample composition, see @bosnjak2018].
+
+The GESIS Panel now comprises three cohorts, an original cohort and two refreshment cohorts. We analyzed Cohort A, the panel's first and largest cohort. We focused mainly on data from Wave "bd" (2014; $n = `r sum(gpdata["participation_t1"] == TRUE, na.rm = TRUE)`$) and Wave "cd" (2015; $n = `r sum(gpdata["participation_t2"] == TRUE, na.rm = TRUE)`$), the first and second wave in which HOVS17 was fielded. All our analyses are based on the first of these waves, with the exception of our analyses of the 1-year test--retest stability of values, which required the second wave. We took additional measures (e.g., basic demographic information and correlates) from the initial screening interview (Wave "a12"; 2013/2014) and from waves in between the two main annual waves in which values were measured (for details, see Measures and the R code in the first author's GitLab repository).
+
+## Measures
+
+### HOVS17
+
+Since 2014, starting with wave "bd"^[^The GESIS Panel uses letters as wave codes, whereby the first letter denotes survey years, e.g., "b" refers to waves fielded in 2014, "c" to waves fielded in 2015.], the GESIS Panel includes HOVS17 as part of its annual core module, which is typically fielded in September of the respective survey year. Table \@ref(tab:german-scale-info) in the Appendix shows the German version of HOVS17 fielded in the GESIS Panel.
+
+The instructions read as follows: "We will now describe different people to you. Please read each description and think about the extent to which each person is similar to you or not. Please indicate how similar the person in each description is to you." Respondents indicated how similar the person described in the item was to them on a fully labelled 6-point rating scale (1 = *is not at all similar to me*; 6 = *is very similar to me*).
+
+### Correlates and Criteria
+
+#### Sociodemographic characteristics
+
+We included age in years, educational attainment (1 = university entrance certification (German Abitur); 0 = no university entrance certification), gender (1 = male; 0 = female), and monthly net income (measured in 15 steps that lead to an approximately normal distribution).
+
+#### Big Five 
+
+Personality traits were measured with the Big-Five Inventory-10 [BFI-10, @rammstedt2007]. The BFI-10 measures each Big Five dimension --Open-Mindedness (or Openness to Experience), Conscientiousness, Extraversion, Agreeableness, and Emotional Stability (or Neuroticism)--with 2 items. Despite its brevity, the BFI-10 performs well in terms of predictive validity compared to longer inventories [@rammstedt2021]. We used data from the same wave in which values were assessed (wave "bd").
+
+#### Importance of life domains
+
+Respondents indicated how important each of seven areas of life were to them on a scale ranging from 1 ("very unimportant") to 7 ("very important"). The life domains were work, family, leisure, friends, neighbors, financial situation, and health. We used data from wave "ba".
+
+#### Political orientation
+
+Respondents indicated their political orientation on the left---right spectrum on a scale from 1 ("Left") to 7 ("Right") in wave "bc".
+
+#### Subjective well-being
+
+We used two indicators of subjective well-being: General life satisfaction and happiness. For life satisfaction, respondents were asked to indicate, on a scale from 0 ("extremely dissatisfied") to 10 ("extremely satisfied"), how satisfied they were with their life at present in wave "bd". For happiness, respondents indicated how happy they were, all things considered, on a scale from 0 ("extremely unhappy") to 10 ("extremely happy") in wave "bb".
+
+## Analyses
+
+Our analyses comprised eight steps. First, we computed descriptive statistics on the scale and item level. Next, we tested several different aspects of structural/factorial validity: the location of the items in MDS; the (uni-)dimensionality and reliability (internal consistency and test--retest stability) of the 4 scales; the factorial validity of the individual scales by means of fit of single-factor CFA models; and the factorial validity of the entire inventory by means of joint (4-factor) EFA models. We also tested the measurement invariance of the 4 scales across age groups, gender, and educational strata by means of multiple-group CFA. Finally, we tested the nomological network and criterion validity by correlating the scales with the abovementioned correlates and criteria. We used `r papaja::cite_r()` for all our analyses. The Results section provides additional details on the procedures.
+
+# Results
+
+## Descriptive Statistics and Scale Intercorrelations
+
+We first computed descriptive statistics of the observed scale scores. The density plots in Figure \@ref(fig:scale-distributions) show the distribution of these scores. Table \@ref(tab:scale-descriptives) in the Appendix shows detailed descriptive statistics for both the raw and centered scale scores. Additionally, Table \@ref(tab:item-descriptives) provides descriptive statistics on the item level.
+
+`r scale_descriptives$variable[which.max(scale_descriptives$mean[1:4])]` was the most highly endorsed higher-order value, whereas `r scale_descriptives$variable[which.min(scale_descriptives$mean[1:4])]` was the least highly endorsed. Self-Enhancement and Conservation were not only less highly endorsed but also showed higher variance than Self-Transcendence and Openness. All higher-order values were negatively skewed except for Self-Enhancement. 
+
+(ref:scale-distributions-caption) Distributions of the observed raw scale scores.
+
+```{r scale-distributions, fig.cap = "(ref:scale-distributions-caption)"}
+
+annotations <- scale_descriptives[1:4,1:3]
+annotations$label = glue(
+  "M = {round(annotations$mean, 2)}, SD = {round(annotations$sd, 2)}"
+)
+annotations <- rename(annotations, 'Higher-order value' = variable)
+
+
+gpdata |> 
+    select(t1_value_dimensions) |>
+    pivot_longer(everything(), names_to = "Higher-order value", values_to = "Raw score") |>
+    ggplot(aes(x = `Raw score`, y = `Higher-order value`,fill = `Higher-order value`) ) +
+    geom_density_ridges(show.legend = FALSE,
+                        scale = 0.95,
+                        bandwidth = 0.15, alpha = 0.3) +
+    geom_label(show.legend = FALSE,
+               data = annotations,
+               aes(x = mean, y = `Higher-order value`, label = label)) +
+    scale_x_continuous(limits = c(1,6), breaks = c(1:6)) + 
+    scale_fill_manual(values = c("#4472C4", "#F4E62C", "#FF0000", "#70AD47")) +
+    #   scale_color_manual(values = c("royalblue3", "gold", "red2", "green3")) +
+    theme_classic() + ylab(NULL) + 
+  
+   
+rm(annotations)
+```
+
+Table \@ref(tab:dimension-correlations) shows the correlations between the observed scores based on raw scores (upper triangle) and centered scores (lower triangle). The correlations among the raw scale scores were all positive, albeit mostly moderate in size, suggesting the presence of a general (response style) factor. After centering, the familiar pattern emerged with great clarity: Openness correlated negatively with Conservation, its opposing higher-order value, whereas Self-Transcendence correlated negatively with Self-Enhancement, its opposing higher-order value.
+
+(ref:dimension-correlations-caption) Correlations among the 4 scale scores with (lower triangle) and without centering (upper triangle).
+
+```{r dimension-correlations}
+ 
+dimension_correlations <- dimension_correlations |> 
+  printnum(gt1 = FALSE) 
+
+diag(dimension_correlations) <- '–'
+
+dimension_correlations |> 
+apa_table(
+   align = "lcccc",
+     caption = "(ref:dimension-correlations-caption)",
+     note = "The lower diagonal shows the correlations of the centered scale scores obtained by subtracting the with-person mean across all items. The upper diagonal shows the correlations of the raw (uncentered) scale scores."
+  )
+ 
+```
+
+## MDS
+
+Next, we applied MDS--the most widely used approach in the context of the Schwartz theory--to test whether the 17 selected items were located in the two-dimensional space as proposed by the theory. For this purpose, we converted the correlation matrix into a distance matrix. As is conventional, we ran an interval MDS and evaluated the solution using the stress-1 value [e.g., @mair2018]. 
+
+(ref:mds-plot-caption) Location of the 17 items in a two-dimensional MDS configuration.
+
+```{r mds-plot, fig.cap = "(ref:mds-plot-caption)"}
+
+# New version
+
+library(ggrepel)
+ggplot(mds_configuration, aes(x = `Dimension 1`, y = `Dimension 2`, color = `Higher-order value`, fill = `Higher-order value`, label = `Item`)) +
+    geom_point(color = "black", size = 5, shape = 21, alpha = 0.7, stroke = 1.25) + 
+    geom_text_repel(show.legend = FALSE,
+                    size = 5,
+                    color = "black",
+                    box.padding = 0.75, # Adjust padding as necessary
+                    point.padding = 0.75, # Adjust padding as necessary
+                    min.segment.length = 0) +
+    scale_color_manual(values = c("#4472C4", "#F4E62C", "#FF0000", "#70AD47")) +
+    scale_fill_manual(values = c("#4472C4", "#F4E62C", "#FF0000", "#70AD47"))  +
+    scale_x_continuous(limits = c(-1, 1)) +
+    scale_y_continuous(limits = c(-1, 1)) +
+    theme_classic() +
+    theme(legend.position = "top",
+          text = element_text(size = 16),  # Base text size
+          axis.title = element_text(size = 16),  # Axis labels
+          axis.text = element_text(size = 16),  # Axis ticks labels
+          legend.title = element_blank(),
+          legend.title.align = 1, # Legend title
+          legend.text = element_text(size = 16),  # Legend keys
+          plot.title = element_text(size = 16),
+          plot.margin = margin(1, 1, 1, 1, "cm"))
+    
+# Also save the plot
+      ggsave("mds-pot.svg",
+             plot = last_plot(), width = 10, height = 10)  # Adjust size as needed
+    
+
+```
+
+Figure\ \@ref(fig:mds-plot) shows the location of the 17 items (colored according to the higher-order value they measure) in a two-dimensional MDS space. The stress value of the two-dimensional configuration was acceptable at `r papaja::printnum(mds_results$stress, digits = 3, gt1 = FALSE)`. The items intended to measure the same higher-order value were consistently located close to each other, forming two sets of opposing poles reflecting the motivational tensions between Openness vs. Conservation and Self-Enhancement vs. Self-Transcendence, respectively. Thus, despite the small number of items, the selected items covered the value circle satisfactorily well.
+
+
+## Unidimensionality
+
+Unidimensionality holds if a single latent variable underlies a set of items [@hattie1985; @ziegler2015]. Only if unidimensionality holds can scale scores be unambiguously interpreted as reflecting the target construct. Unidimensionality is also a prerequisite for unbiased validity and reliability estimates. Although higher-order values were not conceived as unidimensional constructs, a goal of the item selection for HOVS17 was to obtain homogenous, ideally unidimensional subscales for each of the 4 higher-order values.
+
+We tested unidimensionality via the minimum average partial test [MAP, @velicer2000], parallel analysis [PA, @horn1965], and the Empirical Kaiser Criterion [EKC, @braeken2017]. EKC, MAP, and PA offer complementary information for assessing dimensionality. Although none of them performs better than the other two in all empirical scenarios, we gave EKC the greatest weight because EKC performs as well or better than other indices for short scales [@braeken2017; @auerswald2019]. Additionally, we inspected the first eigenvalue and the ratio of the first to second eigenvalue. Although there are no universal cutoffs for how large eigenvalues or their ratio should be, larger values are generally preferable.
+
+
+(ref:dimensionality-caption) Dimensionality of higher-order value scales and the full item set.
+
+```{r dimensionality-table}
+ 
+dimensionality_results |> 
+mutate(Dimension = str_replace_all(Dimension, dimension_renamer),
+       across(c(PA, MAP, EKC), ~printnum(.x, digits = 0))) |> 
+  rename("1st eigenvalue" = first_eigen, "2nd eigenvalue" = second_eigen,  "eigen ratio" = eigen_ratio) |> 
+ select(-error) |> 
+  apa_table(
+    align = "lcccccc",
+     caption = "(ref:dimensionality-caption)"
+  )
+ 
+```
+
+The results in Table \@ref(tab:dimensionality-table) suggested that all 4 scales were unidimensional. There was always a dominant first eigenvalue. For Conservation, MAP suggested no dominant first factor, which is likely due to the small number of items (i.e., three). Unidimensionality analyses of the full item set were aligned with the intended number of higher-order values for PA and EKC, whereas MAP suggested only 2 factors. This may reflect differences in the three indices' sensitivity to minor factors.
+
+Thus, the set of 17 heterogenous items reflected 4 unidimensional higher-order factors. This suggests that the item selection for HOVS17 achieved relatively homogenous dimensions, although it does not necessarily mean that each higher-order value can be modeled with a single-factor CFA.
+
+## Reliabilities
+
+We computed two measures of internal reliability: Cronbach's alpha ($\alpha$) and McDonald's omega ($\omega$). Both are measures of the reliability of a unit-weighted scale score--the type of score most value researchers employ. Whereas $\alpha$ assumes at least an essentially $\tau$-equivalent model, $\omega$ assumes a $\tau$-congeneric model and can be used even if there are correlated errors [@zinbarg2006; @widaman2022]. As it is more adequate for heterogenous and $\tau$-congeneric scales, we mainly focused on $\omega$. Moreover, we estimated test--retest stability over 1 year. Different from internal reliability, test--retest stability informs about the rank-order stability of scale scores when scales are administered repeatedly and does not assume reflective measurement. 
+
+Table \@ref(tab:reliability-table) shows the reliabilities for the 4 higher-order value dimensions. Internal reliabilities ($\omega$) ranged from `r min(reliability_results[['Omega']]) |> printnum(gt1 = FALSE)` for Conservation to `r max(reliability_results[['Omega']]) |> printnum(gt1 = FALSE)` for Openness. One-year test--retest reliabilities were more similar across the 4 dimensions, ranging from `r min(reliability_results[['Test-Retest']]) |> printnum(gt1 = FALSE)` to `r max(reliability_results[['Test-Retest']]) |> printnum(gt1 = FALSE)`. For Conservation, they were higher than internal reliability, whereas they were similar or lower for the other dimensions. Given the nature of the scales as heterogeneous higher-order constructs and the small number of Conservation items, we judged these reliabilities to be acceptable (for Conservation and Self-Enhancement) to good (for Self-Transcendence and Openness).
+
+
+(ref:reliability-caption) Reliabilities of the 4 higher-order value scales.
+
+```{r reliability-table}
+ 
+reliability_results |> 
+  mutate(Dimension = str_replace_all(Dimension, dimension_renamer)) |>
+  select(-`Split-Half`) |>
+  mutate(across(c("Alpha", "Omega", "Test-Retest"), ~as.numeric(.x) |>  printnum(gt1 = FALSE))) |>
+  apa_table(
+    align = "lccc",
+     caption = "(ref:reliability-caption)"
+  )
+ 
+```
+
+## CFA models
+
+We fit a single-factor CFA model to each of the 4 subscales to test their factorial validity when conceived as unitary constructs. We estimated $\tau$-congeneric models in which items can have varying loadings. For Conservation, which was measured by only 3 items, such a model would be just-identified ($df = 0$). To obtain a testable model for Conservation, we therefore constrained the loadings of the items 12CO and 4CO to equality. These items measure the basic values of Conformity and Tradition, respectively, which occupy essentially the same segment in the value circle, justifying our choice to give them equal loadings.^[A $\tau$-equivalent model in which all items had equal loadings also showed good fit.]
+
+We estimated all models with a robust maximum likelihood estimator (MLR) and full-information maximum likehihood (FIML) to handle missing data [e.g., @graham2009a]. In line with current conventions for judging model fit [@hu1999], we chiefly relied on the comparative fit index (CFI), root mean square error of approximation (RMSEA) and the standardized root mean square residual (SRMR) to assess model fit. We judged model fit to be acceptable according to the following rules of thumb: CFI > .90 ("adequate") or > .95 ("good"), RMSEA < .05 ("good") or at least < .08 ("adequate"), and SRMR  < .05 ("good") or at least < .10 ("adequate"). We stipulated that a model was acceptable when at least two of the three indices passed the cutoffs.
+
+Table \@ref(tab:cfa-table) shows the fit indices of CFA models for each higher-order value. Model fit was acceptable for three of the value dimensions. For Self-Transcendence (Model D), the model had borderline fit as judged by CFI and unacceptable fit according to RMSEA. A closer inspection of the modification indices and residual correlation matrix indicated that the two items measuring benevolence, 9ST and 13ST, violated local stochastic independence. This may reflect shared wording (in the German version, both items contain the exact same phrase to refer to people who are dear to one's heart) and/or that benevolence items share more variance with each other than they share with the Universalism items. We therefore estimated an additional model (Model E) in which we let the two benevolence items covary. Permitting this residual covariance strongly improved model fit. We thus concluded that CFA model fit was acceptable for all higher-order values, especially after permitting one residual covariance for Self-Transcendence.
+
+(ref:cfa-table-caption) Fit of CFA models for each of the higher-order value scales.
+
+```{r cfa-table}
+ 
+
+cfa_table |> 
+    mutate(Dimension = str_replace_all(Dimension, dimension_renamer),
+           "p value" = papaja::printnum(.data[["p value"]], gt1 = FALSE, digits = 3),
+           df = papaja::printnum(.data[["df"]],  digits = 0)
+    ) |> arrange(Dimension) |> mutate(
+Model = LETTERS[1:5]) |>
+  rename( "$\\chi^2$" = "Chi-2",
+          "$\\emph{df}$" = df,
+           "$\\emph{p}$" = "p value" ) |>
+  apa_table(
+    escape = FALSE,
+     caption = "(ref:cfa-table-caption)"
+  )
+ 
+```
+## EFA
+
+In addition to the single-factor CFAs per higher-order value and MDS, we estimated a joint EFA model with all value items to allow for cross-loadings of items on the other higher-order value factors. Although the Schwartz theory is based on MDS, the goal was to test whether the 17 value items would load on 4 higher-order value factors in a joint EFA model. We used maximum likelihood extraction and oblique target rotation for this purpose. The target matrix contained unit loadings of each item on one factor representing that value and zero loadings on all other factors. 
+
+Table\ \@ref(tab:efa-results) shows the EFA loadings on 4 extracted factors. Each item had its highest loadings on the intended factor. Several of the Openness-to-Change items had substantial secondary loadings on the Self-Transcendence Factors. Most other cross-loadings were small ($\lambda \leq .30$). The 4 latent factors accounted for `r {efa_results[["Vaccounted"]]["Cumulative Var","ML4"] * 100} |> printnum(digits = 2)`% of the variance in the item set.
+
+(ref:efa-results-caption) Loadings of the 17 items on 4 higher-order value factors in an EFA.
+
+```{r efa-results}
+
+domain_loadings |>
+  select(-Complexity, -Uniqueness) |>
+  rowwise() |>
+  mutate(across(starts_with("ML"), 
+                ~cell_spec(sprintf(fmt = "%.2f", .x), 
+                           bold = ifelse(.x == max(c_across(starts_with("ML"))),
+                                         TRUE, FALSE)))) %>%
+  rename("ST" = ML1,
+         "SE" = ML2,
+         "OC" = ML3,
+         "CO" = ML4) |>
+  apa_table(escape = FALSE,
+            #align = "lcccc",
+            align = ifelse(isTRUE(word), 
+                           "lcccc", rep("m{2cm}", 5)),
+            caption = "(ref:efa-results-caption)",
+    note = "ST = Self-Transcendence; SE = Self-Enhancement, OC = Openness to Change; CO = Conservation. Highest loading per item highlighted in bold."
+  )
+
+```
+
+
+## Measurement Invariance
+
+Using multiple-group single-factor CFAs, we tested measurement invariance across age groups, gender, and educational strata using multiple-group CFAs [e.g., @steenkamp1998]. For Self-Transcendence, we based these tests on Model E in Table \@ref(tab:cfa-table) (permitting one residual covariance between the two benevolence items). Detailed model fit results are shown in Table \@ref(tab:mi-details). We fitted configural, metric (i.e., equal factor loadings), and scalar (i.e., equal factor loadings and intercepts) models. We compared the three levels of invariance based on the criteria suggested by @chen2007 and based on the Bayesian Information Criterion (BIC). Chen's criteria stipulate that differences of $\Delta CFI \geq .010$, $\Delta RMSEA \geq .015$, $\Delta SRMR \geq .030$ when comparing a metric to a configural invariance model suggest loading non-invariance. Differences of $\Delta CFI \geq .010$, $\Delta RMSEA \geq .015$, $\Delta SRMR \geq .010$ suggest intercept non-invariance when comparing a scalar to a metric invariance model. If  full metric but not full scalar invariance held, we fit partial scalar invariance models by releasing the equality constraints for the item intercept with the highest modification index; in this manner, we tested whether a partially scalar invariant model with at least two invariant items--which would still allow for mean-level comparisons--would fit. 
+
+(ref:mi-results-caption) Highest level of invariance achieved according for each higher-order value dimension and grouping variable.
+
+```{r mi-results}
+ 
+mi_qual |> rename("Full invariance" = "MI Chen") |>
+  mutate(#"Full invariance" = str_c("full ", .data$`Full invariance`), 
+    "Partial invariance" = str_replace_all(`Full invariance`, c("scalar" = "-", "metric" = "partial scalar"))) |> select(-`MI BIC` ) |>
+  mutate(Dimension = str_replace_all(Dimension, dimension_renamer),
+         Group     = str_replace_all(Group, group_renamer)) |>  
+  apa_table(
+    font_size = "footnotesize",
+     caption = "(ref:mi-results-caption)",
+     note = "Level of invariance achieved according to Chen's (2007) criteria. We fit partially invariant models only in case full scalar invariance did not hold."
+  )
+ 
+```
+
+Table \@ref(tab:mi-results) shows the measurement invariance results. Based on Chen's (2007) criteria, full metric invariance and, in some cases, even full scalar invariance held for all higher-order values and grouping variables with the exception of Self-Transcendence.  Metric invariance implies that the meaning of the 4 latent variables was identical across all groups. Moreover, in those cases in which full scalar did not hold, partial scalar invariance held after releasing 1, 2 or--in a single case--3 item intercepts. This implies that comparisons of latent means across all groups are possible for all higher-order values.
+
+## Validity Correlations
+
+We computed linear correlations between each value dimension and each of the correlates or criteria to test the nomological net and criterion validity of the 4 scales. We used within-person centered mean scores for each value dimension for this purpose.
+
+Figure \@ref(fig:validity-correlations) shows these correlations. We focus on associations with effect sizes of $r \geq \pm .10$, which corresponds to the 20^th^ percentile of the strengths of correlations in individual-difference research [@gignac2016].
+
+
+
+(ref:validity-caption) Correlations between the higher-order values and external correlates/criteria. Numeric values of the strongest positive and negative correlation are shown.
+
+```{r validity-correlations, fig.cap="(ref:validity-caption)", fig.height=8., out.width="100%"}
+ library(ggforce)
+
+criterion_correlations |>  
+    pivot_longer(-term, names_to = "Value", values_to = "r") |> 
+    mutate(group = case_when(
+        term %in% c("Age (years)", "Gender", "Education", "Income") ~ "Socio-demographic Characteristics",
+        term %in% c("Work", "Finances", "Family", "Leisure", "Friends", "Neighbors", "Health", "Personal net income") ~ "Importance of Life Areas",
+        term == "Left–Right Placement" ~ "Political Orientation",
+        term %in% c("Happiness", "Life Satisfaction") ~ "Subjective Well-Being",
+        TRUE ~ "Personality") |>  factor(levels = c("Socio-demographic Characteristics",
+                                                    "Personality",
+                                                    "Importance of Life Areas",
+                                                    "Political Orientation",
+                                                    "Subjective Well-Being")
+        )) |>
+    group_by(term) |>
+    mutate(label = ifelse(r == min(r) | r == max(r), printnum(r, gt1 = FALSE, digits = 2), ""))  |>
+  
+    ggplot(aes(y = r, x = factor(term, levels = rev(all_criteria)), fill = Value, label = label)) +
+    geom_hline(yintercept = 0, lty = 2) +
+    geom_point(alpha = 0.5, shape = 21, size = 5, stroke = 1.25) + 
+    geom_text(size = 5, position = position_nudge(x = 0.4)) +
+    coord_flip() +
+    facet_col(~group, 
+              scales = "free_y", # Let the x axis vary across facets.
+              space = "free", drop = TRUE)  +
+    scale_y_continuous(limits = c(-0.3, 0.3), name = "Correlation") +
+    scale_fill_manual(values = c("#4472C4", "#F4E62C", "#FF0000", "#70AD47")) +
+    scale_x_discrete(name = NULL) +
+   theme_minimal() +
+  theme(legend.position = "top",
+          text = element_text(size = 18),  # Base text size
+          # axis.title = element_text(size = 16),  # Axis labels
+          # axis.text = element_text(size = 16),  # Axis ticks labels
+          # legend.title = element_blank(),
+          #           legend.title.align = 1, # Legend title
+          # legend.text = element_text(size = 16),  # Legend keys
+          # plot.title = element_text(size = 16),
+          plot.margin = margin(1, 1, 1, 1, "cm"))
+ 
+# Also save the plot separate
+      ggsave("criterion_correlations.svg", 
+             plot = last_plot(), 
+             width = 12, 
+             height = 15)  # Adjust size as needed
+
+
+# criterion_correlation_table %>% 
+#     pivot_longer(-term, values_to = "Correlation", names_to = "Dimension") %>% 
+#     mutate(Corr = papaja::printnum(Correlation, gt1 = FALSE)) %>% 
+#     ggplot(aes (x = term, y = Correlation, label = Corr, group = Dimension, fill = Dimension)) + geom_point(size = 3, alpha = 0.7, shape = 24, stroke = 0, colour = "black") + coord_flip() + geom_text(nudge_x = 0.25, size = 3) + scale_fill_manual(values = c("#4472C4", "#F4E62C", "#FF0000", "#70AD47")) + scale_y_continuous(limits = c(-0.5, 0.5))
+
+```
+
+There were several value differences across socio-demographic strata. For gender, women attached greater importance to Self-Transcendence but less importance to Self-Enhancement compared to men. For education, those with higher education (i.e., general university entrance qualification) attached greater importance to Openness and less importance to Conservation than those with less education. For age, older people attached more importance to Conservation and less importance to Self-Enhancement than younger people.
+
+There were also several relevant associations between values and the Big Five. Self-Enhancement was related to lower Open-Mindedness, Conscientiousness, and Agreeableness. Self-Transcendence was related to higher Open-Mindedness, Conscientiousness, and especially Agreeableness. Openness-to-Change was related to higher Open-Mindedness and Emotional Stability. Finally, Conservation was related to higher Conscientiousness but lower Open-Mindedness.
+
+Regarding the relative importance attached to different life areas, Self-Enhancement correlated with viewing work and finances as more important but neighbors as less important. Scoring higher on Self-Transcendence correlated with viewing finances as less important but friends and neighbors as more important. Scoring higher on Conservation correlated with viewing neighbors as more important but leisure and, unexpectedly, friends as less important. Scoring higher in Openness correlated with viewing Friends as more important.
+
+Associations with political orientations were substantial. In line with expectations, respondents scoring higher on Self-Transcendence and Openness-to-Change placed themselves more to the left of the continuum, whereas those scoring higher on Self-Enhancement and Conservation placed themselves more to the right.
+
+Associations with subjective well-being were small, though systematic, and in line with expectations. The more the importance respondents ascribed to Self-Enhancement values, the less satisfied with life and the less happy they were. 
+
+# Discussion
+
+This paper evaluated the psychometric properties of HOVS17, a short inventory to assess the 4 higher-order values in Schwartz's [-@schwartz1992] model of basic human values. Originally developed for the GESIS Panel, this inventory is tailored to the needs of multi-thematic surveys in which questionnaire space is limited. However, the scale is generally suitable for any research whose focus is on the 4 higher-order values, rather than the 10 basic human values.
+
+Our results show that HOVS17 shows satisfactory psychometric properties. All 4 subscales were clearly unidimensional, showed good fit when modeled as reflective latent variables in single-factor CFAs, and had at least acceptable reliabilities as well as moderate-to-high 1-year test--retest stabilities (.65 to .69). As regards the structural validity of the inventory as a whole, the 17 items were located in the two-dimensional MDS space as hypothesized and loaded largely as intended on 4 factors in an EFA. These findings are noteworthy in view of the fact that the higher-order values represent heterogeneous higher-level constructs that were not originally conceived as latent variables through factor-analytic means but emerged as segments of a quasi-circumplex model [@schwartz1992; @schwartz2012] and are typically treated as formative indices. These results thus show that the attempt to create short scales that would conform to psychometric standards of unidimensionality, reliability, and factorial validity when modeled via CFA and EFA were successful.
+
+The levels of measurement invariance across gender, age groups, and educational strata varied across the higher-order value dimensions. At least full metric invariance held for all dimensions according. In some instances, even full scalar invariance held. That metric invariance held in all cases implies that the meanings of the latent variables are equivalent across sociodemographic strata. The lack of full scalar invariance for some scales and groups implies that the latent means are not fully comparable. Researchers interested in unbiased mean-level comparsions across sociodemographic strata may model partially invariant models in which some intercepts are free to vary across groups; or resort to Bayesian approximate invariance [e.g., @cieciuch2014]. As our analyses showed, partial scalar invariance holds for all values and groups we investigated. Alternatively, researchers may choose to prefer the fully invariant model despite its poorer fit, prioritizing design-based inference over model-based inference [@robitzsch2022]. This choice should be made transparent in any research using HOVS17. We hasten to add, however, that measurement invariance is only relevant for researchers who opt to treat higher-order values as reflective constructs. 
+
+The higher-order values exhibited small to moderate associations with the selected correlates and criteria (all $r < \pm .30$). The associations were mostly smaller than those with the 10 basic values reported in prior research, for example on the links between basic human values and well-being [@sortheix2017] or personality [@parks-leduc2015]. However, it should be noted that these correlations were based on observed scores without correction for attenuation, and that a correlation as small as $r = .10$ corresponds to the 20^th^ percentile of correlations in individual-difference research, whereas a correlation of $r = .19$ corresponds to the 50^th^ percentile according to meta-analytic effect size guidelines [@gignac2016]. With this in mind, the results can be seen as providing support for the validity of the higher-order value scales of HOVS17. Specifically, the scales were sensitive to socio-demographic group differences in values, including age, gender, and educational differences. There were also small associations with income, which can be seen as evidence for criterion validity. The higher-order values were systematically associated with Big Five personality traits, in line with prior meta-analyses [@parks-leduc2015]; at the same time, they showed discriminant validity from all personality traits. As expected, the higher-order values were also related to the importance attached to different life domains. The strongest value-related differences emerged in the importance attached to finances, leisure, friends, and neighbors and also work but less so to family and health. Moreover, the values were linked to political orientation (left--right placement) meaningfully as in prior research [e.g., @piurko2011]. Associations with well-being were small; the largest associations was a negative correlation between Self-enhancement and happiness ($r = -.10$).
+
+## Recommendations for Using the Scale
+
+We envision that most users of HOVS17 will analyze summative index scores, in line with the dominant practice in value research. Doing so is compatible with a view of higher-order values as formative as well as reflective constructs. For conceptual (i.e., converting ratings to value priorities) and psychometric (i.e., eliminating individual differences in the usage of the response scale) reasons, we recommend using scores centered at the within-person mean. This is especially important when values–outcomes associations are of interest. 
+
+When using summative indices, it should be noted that these are point estimates, not true scores, and as such contain measurement error. If the main interest is in the reliable variance shared among the indicators of a higher-order values, rather than the total variance, researchers may prefer to model each higher-order with CFA [e.g., @grosz2021]. Alternatively, one may model each summative index score as a single-indicator latent variable, using test--retest stability as a reliability estimate.
+
+In line with recent trends in personality psychology [e.g., @mottus2016], researchers may occasionally be interested in analyzing all 17 single items, rather than aggregate value scores. We caution, however, that the item selection of HOVS17 is neither an exhaustive nor a balanced representation of the basic human values in Schwartz's theory. The purpose of HOVS17 is solely to measure the 4 higher-order values. One potentially justifiable exception is using single items to maximize predictive power when values are a predictor in multiple regression. However, additional analyses (not shown) <!--shown in Table \@ref(tab:r-squared)--> suggested that using the 17 individual items as predictors of the criteria selected for the present study increased (adjusted) $R^2$ only slightly compared to using the 4 higher-order values. Measurement error in the single items is among the likely reasons for this. We therefore generally advise against analyzing the individual items of HOVS17 in most cases and recommend using the 4 scale scores. 
+
+## Limitations and Directions for Future Research
+
+Our study has two main limitations that should be noted. First, although we reported correlations with a range of constructs, these constructs represent only a small share of potential correlates and criteria that may interest researchers. Moreover, we looked at linear correlations only. Future research may want to investigate a broader set of outcomes -- ideally including non-self-reported outcomes -- and test whether statistical approaches that allow for non-linearity [e.g., @lee2022] provide further support for the validity of HOVS17. 
+
+The Schwartz Values are firmly rooted in cross-cultural research. Against this backdrop, a second limitation is that we validated the scale only in one language, German, for which the GESIS Panel provides a uniquely rich data source. It would be desirable to validate the scale in multiple languages for future research in order to widen its scope of application. Given the construction process of HOVS17 (i.e., adaptation from existing PVQ-R items that have been translated into many languages), this next step seems well within reach. 
+
+## Conclusion
+
+HOVS17 assesses the 4 higher-order Schwartz values with 3 to 5 items each (17 items in total) drawn from the PVQ-57. It serves as the the annual measure of values in the GESIS Panel. Our analyses demonstrate that HOVS17 has satisfactory psychometric properties. We conclude that the HOVS17 provides a good basis studying the life-span development, predictors, and consequences of values if the focus is on the global higher-order values, rather than the more fine-grained 10 basic value
+
+\newpage
+
+# References
+
+::: {#refs custom-style="Bibliography"}
+:::
+
+
+\newpage
+
+# (APPENDIX) Appendix {-}
+
+
+```{r child = "appendix.Rmd"}
+```
+

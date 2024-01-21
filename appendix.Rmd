@@ -1,0 +1,152 @@
+# Supplementary Tables and Figures
+
+
+(ref:german-scale-info-caption) German wording of the HOVS17 items as fielded in the GESIS Panel.
+
+```{r german-scale-info}
+ 
+scale_info |>
+  select(Item, `Item Label (GESIS Panel)`, `Wording (German)`) |>
+  rename("\\makecell[c]{Item Label\\\\(GESIS Panel)}" = `Item Label (GESIS Panel)` ) |>
+  apa_table(longtable = TRUE,
+            escape = FALSE,
+    font_size = "tiny", 
+    caption = "(ref:german-scale-info-caption)",
+    align = ifelse(isTRUE(word), c("llcc"),
+                   c("m{2.75cm}", "m{1.5cm}", "m{7cm}")),
+      stub_indents  = list("Conservation" = c(1:3),
+                       "Openness-to-Change" = c(4:8),
+                       "Self-Enhancement" = c(9:12),
+                       "Self-Transcendence" = c(13:17)),
+  )
+ 
+```
+
+\newpage
+
+(ref:scale-descriptives-caption) Descriptive statistics on the scale level.
+
+```{r scale-descriptives}
+ 
+scale_descriptives |> 
+    mutate(valid = printnum(valid, digits = 0),
+           across(where(is.numeric), ~printnum(.x))) |>
+  rename(Dimension = variable,
+          "\\emph{n}" = valid,
+          "\\emph{M}" = mean,
+           "\\emph{SD}" = sd,
+          "\\emph{Min}" = min,
+          "\\emph{Max}" = max,
+         "\\% missing" = missing) |> 
+
+  apa_table(
+    stub_indents = list("Raw scores" = c(1:4),
+                        "Centered scores" = c(5:8)),
+    escape = FALSE,
+    longtable = TRUE,
+     font_size = "footnotesize", 
+     caption = "(ref:scale-descriptives-caption)"
+     
+  )
+ 
+```
+
+\newpage
+
+
+(ref:mi-details-caption) Model fits of the configural, metric, and scalar models for each higher-order values and grouping variable.
+
+```{r mi-details}
+
+mi_fit_tab_partial |>  
+    filter(Model == "scalar") |>  
+    mutate(Model = "partial scalar") |>  
+    bind_rows(mi_fit_tab) |>  
+    arrange(Dimension, Group, match(Model, c("configural", "metric", "scalar", "partial scalar"))) |>  
+    ungroup()|> 
+  mutate(Dimension = str_replace_all(Dimension, dimension_renamer),
+         Group     = str_replace_all(Group, group_renamer),
+         df = printnum(df, digits = 0),
+         pvalue = printnum(pvalue, gt1 = FALSE, digits = 3)) |>
+  select(-Dimension, -MI_Chen, -MI_BIC) |>
+    rename( "$\\chi^2$" = "ChiSq",
+           "$\\emph{df}$" = df,
+           "$\\emph{p}$" = "pvalue" ) |>
+  apa_table(
+  stub_indents = list("Conservation" = c(1:12),
+                      "Self-Enhancement" = c(13:24),
+                      "Openness" = c(25:36),
+                      "Self-Transcendence" = c(37:48)
+  ),
+  escape = FALSE,
+  font_size = "footnotesize",
+  digits = 2,
+  caption = "(ref:mi-details-caption)",
+  longtable = TRUE
+    )
+ 
+```
+
+\newpage
+
+
+(ref:item-descriptives-caption) Descriptive statistics on the item level.
+
+```{r item-descriptives}
+
+item_descriptives |> 
+  mutate(valid = printnum(valid, digits = 0),
+         across(c(mean, sd, missing, kurtosis), ~printnum(.x)),
+         across(c(min, max, valid), ~printnum(.x, digits = 0))) |>
+  rename(Wording = wording,
+         "\\emph{n}" = valid,
+         "\\emph{M}" = mean,
+         "\\emph{SD}" = sd,
+         "\\emph{Min}" = min,
+         "\\emph{Max}" = max,
+         #"\\% \\ missing" = missing
+         ) |> 
+  select(-missing, -variable)   |> 
+  
+  apa_table(longtable = TRUE,
+   # stub_indents = list("Raw scores" = c(1:4),
+   #                     "Centered" = c(5:8)),
+    escape = FALSE,
+    #align = "clccccccc",
+     align = ifelse(isTRUE(word),
+                    "clccccccc", 
+                    c("p{0.75cm}", "p{6cm}", rep("p{0.6cm}", 7))),
+    font_size = "tiny",
+    caption = "(ref:item-descriptives-caption)"
+    
+  )
+
+```
+
+\newpage
+
+
+<!-- (ref:r-squared-caption) Variance explained (adjusted $R^2$) in the criteria by the 4 higher-order values or 17 single items. -->
+
+<!-- ```{r r-squared} -->
+
+<!-- adjusted_r_squared |>  -->
+<!--   rename(Outcome = "outcome") |> -->
+<!--   mutate( -->
+<!--     "$\\Delta$" = `Single items` - `Higher-order values`, -->
+<!--     across(where(is.numeric), ~papaja::printnum(.x, gt1 = FALSE, digits = 3))) |> -->
+<!--   papaja::apa_table(longtable = TRUE, -->
+<!--   stub_indents = list("Socio-demographic characteristics" = c(1:4), -->
+<!--                       "Personality (Big Five)" = c(5:9), -->
+<!--                       "Importance of Life Areas" = c(10:16), -->
+<!--                       "Political Orientation" = 17, -->
+<!--                       "Well-Being" = c(18:19) -->
+<!--   ), -->
+<!--   escape = FALSE, -->
+<!--   font_size = "footnotesize", -->
+<!--   digits = 2, -->
+<!--   caption = "(ref:r-squared-caption)", -->
+<!--   note = "$\\Delta$ denotes the increment in $R^2$ for the models containing the single-item instead of the 4 higher-order value models as predictors." -->
+<!--     ) -->
+
+<!-- ``` -->
