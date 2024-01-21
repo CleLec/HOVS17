@@ -1,4 +1,4 @@
-# Project Title
+# Higher-Order Values Scale-17 (HOVS17) - Validation Study
 
 ## Overview
 
